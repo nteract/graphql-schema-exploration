@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/nteract/graphql-schema-exploration/issues"
   },
-  "homepage": "https://github.com/nteract/graphql-schema-exploration#readme"
+  "homepage": "https://github.com/nteract/graphql-schema-exploration#readme",
+  "dependencies": {
+    "apollo-server": "^2.0.0-beta.2",
+    "graphql": "^0.13.2"
+  }
 }
