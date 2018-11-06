@@ -78,12 +78,12 @@ const typeDefs = gql`
   }
 
   union Output = StreamOutput # | DisplayData
-
   # The "Query" type is the root of all GraphQL queries.
   # (A "Mutation" type will be covered later on.)
   type Query {
     cell(cellId: ID!): Cell
   }
+
 `;
 
 const resolvers = {
@@ -119,7 +119,7 @@ const resolvers = {
 // In the most basic sense, the ApolloServer can be started
 // by passing type definitions (typeDefs) and the resolvers
 // responsible for fetching the data for those types.
-const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({ typeDefs, resolvers, mocks: true });
 
 // This `listen` method launches a web-server.  Existing apps
 // can utilize middleware options, which we'll discuss later.
