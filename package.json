@@ -19,6 +19,7 @@
   "homepage": "https://github.com/nteract/graphql-schema-exploration#readme",
   "dependencies": {
     "apollo-server": "^2.1.0",
+    "faker": "^4.1.0",
     "graphql": "^14.0.2",
     "graphql-type-json": "^0.2.1"
   },
