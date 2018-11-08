@@ -9,14 +9,21 @@ const typeDefs = gql`
     metadata: JSON!
   }
 
+  enum CellType {
+    CODE
+    MARKDOWN
+  }
+
   type MarkdownCell {
     id: ID!
+    cellType: CellType!
     source: String!
     metadata: JSON!
   }
 
   type CodeCell {
     id: ID!
+    cellType: CellType!
     source: String!
     outputs: [Output!]!
     metadata: JSON!
@@ -30,6 +37,8 @@ const typeDefs = gql`
   }
 
   type DisplayData {
+    # TODO: Figure out if there's a way to set a literal on a type field
+    outputType: OutputType
     id: ID!
     data: JSON!
     metadata: JSON!
@@ -42,6 +51,7 @@ const typeDefs = gql`
 
   type StreamOutput {
     id: ID!
+    outputType: OutputType
     name: StreamName!
     text: String!
   }
@@ -60,9 +70,9 @@ const resolvers = {
   Cell: {
     __resolveType: root => {
       switch (root.cellType) {
-        case "code":
+        case "CODE":
           return "CodeCell";
-        case "markdown":
+        case "MARKDOWN":
           return "MarkdownCell";
         default:
           throw new Error("this should not happen o_____o");
@@ -71,25 +81,37 @@ const resolvers = {
   },
   Output: {
     __resolveType: root => {
-      console.log(root);
       switch (root.outputType) {
-        case "stream":
+        case "STREAM":
           return "StreamOutput";
-        case "display_data":
+        case "DISPLAY_DATA":
           return "DisplayData";
         default:
           throw new Error("this should not happen o_____o");
       }
     }
-  },
-  DisplayData: {
-    data: () => ({ "text/html": "<b>test</b>" })
   }
 };
 
 const mocks = {
   // By default we'll do empty objects for the JSON Scalar
-  JSON: () => ({})
+  JSON: () => ({}),
+  CodeCell: () => ({
+    cellType: "CODE",
+    source: `import pandas as pd
+df = pd.DataFrame()
+display(df)`,
+    outputs: [
+      {
+        outputType: "DISPLAY_DATA",
+        data: { "text/html": "<b>table</b>" },
+        metadata: {}
+      }
+    ]
+  }),
+  MarkdownCell: () => ({
+    cellType: "MARKDOWN"
+  })
 };
 
 // In the most basic sense, the ApolloServer can be started
@@ -98,6 +120,7 @@ const mocks = {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  mockEntireSchema: false,
   mocks,
   // Since we're playing around, enable features for introspection and playing on our current deployment
   // If this gets used in a "real" production capacity, introspection and playground should be disabled
@@ -112,7 +135,6 @@ const server = new ApolloServer({
 
 query randCell {
   randomCell {
-    cellType:__typename
     ...codeCell
     ...markdownCell
   }
@@ -120,6 +142,7 @@ query randCell {
 
 fragment codeCell on CodeCell {
   id
+  cellType
   source
   metadata
   outputs {
@@ -130,17 +153,20 @@ fragment codeCell on CodeCell {
 
 fragment markdownCell on MarkdownCell {
   id
+  cellType
   source
   metadata
 }
 
 
 fragment stream on StreamOutput {
+  outputType
   name
   text
 }
 
 fragment displayData on DisplayData {
+  outputType
   data
   metadata
 }
