@@ -96,7 +96,53 @@ const mocks = {
 // In the most basic sense, the ApolloServer can be started
 // by passing type definitions (typeDefs) and the resolvers
 // responsible for fetching the data for those types.
-const server = new ApolloServer({ typeDefs, resolvers, mocks });
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  mocks,
+  playground: {
+    tabs: [
+      {
+        query: `
+# Hit command-enter or ctrl-enter a few times
+
+query randCell {
+  randomCell {
+    cellType:__typename
+    ...codeCell
+    ...markdownCell
+  }
+}
+
+fragment codeCell on CodeCell {
+  source
+  metadata
+  outputs {
+    ...stream
+    ...displayData
+  }
+}
+
+fragment markdownCell on MarkdownCell {
+  source
+  metadata
+}
+
+
+fragment stream on StreamOutput {
+  name
+  text
+}
+
+fragment displayData on DisplayData {
+  data
+  metadata
+}
+    `
+      }
+    ]
+  }
+});
 
 // This `listen` method launches a web-server.  Existing apps
 // can utilize middleware options, which we'll discuss later.
