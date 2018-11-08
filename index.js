@@ -1,37 +1,13 @@
 const { ApolloServer, gql } = require("apollo-server");
 
-const notebooks = {
-  "4567": {
-    cellOrder: ["cell-123", "cell-345"],
-    language: "python"
-  }
-};
-
-const cells = [
-  {
-    id: "cell-123",
-    cellType: "code",
-    source: "import vdom",
-    outputs: [],
-    metadata: { a: 1 }
-  },
-  {
-    id: "cell-345",
-    cellType: "code",
-    source: "import pandas as pd",
-    outputs: [],
-    metadata: {}
-  }
-];
-
 const typeDefs = gql`
   scalar JSON
 
-  # type Notebook {
-  #   cells: [Cell!]!
-  #   language: String
-  #   metadata: JSON!
-  # }
+  type Notebook {
+    cells: [Cell!]!
+    language: String
+    metadata: JSON!
+  }
 
   enum CellType {
     CODE
@@ -61,10 +37,17 @@ const typeDefs = gql`
     metadata: JSON!
   }
 
-  # type DisplayData {
-  #   data: JSON # It would be nice to "partially" type this
-  #   metadata: JSON
-  # }
+  enum OutputType {
+    DISPLAY_DATA
+    STREAM
+  }
+
+  type DisplayData {
+    id: ID!
+    # outputType: OutputType!
+    data: JSON! # It would be nice to "partially" type this
+    metadata: JSON!
+  }
 
   enum StreamName {
     STDOUT
@@ -72,26 +55,23 @@ const typeDefs = gql`
   }
 
   type StreamOutput {
-    outputType: String
-    name: StreamName
-    text: String
+    id: ID!
+    # outputType: OutputType!
+    name: StreamName!
+    text: String!
   }
 
-  union Output = StreamOutput # | DisplayData
-  # The "Query" type is the root of all GraphQL queries.
-  # (A "Mutation" type will be covered later on.)
+  union Output = StreamOutput | DisplayData
+
   type Query {
-    cell(cellId: ID!): Cell
+    cell(cellId: ID!): Cell!
+    allCells: [Cell!]!
+    randomOutput: Output!
   }
 
 `;
 
 const resolvers = {
-  Query: {
-    cell: (root, { cellId }) => {
-      return cells.find(cell => cell.id === cellId);
-    }
-  },
   Cell: {
     __resolveType: root => {
       switch (root.cellType) {
@@ -106,20 +86,31 @@ const resolvers = {
   },
   Output: {
     __resolveType: root => {
+      console.log(root);
       switch (root.outputType) {
         case "stream":
           return "StreamOutput";
+        case "display_data":
+          return "DisplayData";
         default:
           throw new Error("this should not happen o_____o");
       }
     }
+  },
+  DisplayData: {
+    data: () => ({ "text/html": "<b>test</b>" })
   }
+};
+
+const mocks = {
+  // By default we'll do empty objects for the JSON Scalar
+  JSON: () => ({})
 };
 
 // In the most basic sense, the ApolloServer can be started
 // by passing type definitions (typeDefs) and the resolvers
 // responsible for fetching the data for those types.
-const server = new ApolloServer({ typeDefs, resolvers, mocks: true });
+const server = new ApolloServer({ typeDefs, resolvers, mocks });
 
 // This `listen` method launches a web-server.  Existing apps
 // can utilize middleware options, which we'll discuss later.
