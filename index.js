@@ -119,6 +119,7 @@ query randCell {
 }
 
 fragment codeCell on CodeCell {
+  id
   source
   metadata
   outputs {
@@ -128,6 +129,7 @@ fragment codeCell on CodeCell {
 }
 
 fragment markdownCell on MarkdownCell {
+  id
   source
   metadata
 }
