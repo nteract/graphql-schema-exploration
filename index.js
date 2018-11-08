@@ -110,7 +110,10 @@ display(df)`,
     ]
   }),
   MarkdownCell: () => ({
-    cellType: "MARKDOWN"
+    cellType: "MARKDOWN",
+    source: `# Demo time
+
+It's _worth_ checking this out.`
   })
 };
 
