@@ -9,33 +9,20 @@ const typeDefs = gql`
     metadata: JSON!
   }
 
-  enum CellType {
-    CODE
-    MARKDOWN
-    RAW
-  }
-
-  interface Cell {
+  type MarkdownCell {
     id: ID!
-    cellType: CellType!
     source: String!
     metadata: JSON!
   }
 
-  type MarkdownCell implements Cell {
+  type CodeCell {
     id: ID!
     source: String!
-    cellType: CellType!
-    metadata: JSON!
-  }
-
-  type CodeCell implements Cell {
-    id: ID!
-    source: String!
-    cellType: CellType!
     outputs: [Output!]!
     metadata: JSON!
   }
+
+  union Cell = MarkdownCell | CodeCell
 
   enum OutputType {
     DISPLAY_DATA
@@ -44,8 +31,7 @@ const typeDefs = gql`
 
   type DisplayData {
     id: ID!
-    # outputType: OutputType!
-    data: JSON! # It would be nice to "partially" type this
+    data: JSON!
     metadata: JSON!
   }
 
@@ -56,7 +42,6 @@ const typeDefs = gql`
 
   type StreamOutput {
     id: ID!
-    # outputType: OutputType!
     name: StreamName!
     text: String!
   }
@@ -67,6 +52,7 @@ const typeDefs = gql`
     cell(cellId: ID!): Cell!
     allCells: [Cell!]!
     randomOutput: Output!
+    randomCell: Cell!
   }
 
 `;
