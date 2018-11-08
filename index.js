@@ -54,7 +54,6 @@ const typeDefs = gql`
     randomOutput: Output!
     randomCell: Cell!
   }
-
 `;
 
 const resolvers = {
@@ -100,6 +99,10 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   mocks,
+  // Since we're playing around, enable features for introspection and playing on our current deployment
+  // If this gets used in a "real" production capacity, introspection and playground should be disabled
+  // based on NODE_ENV === "production"
+  introspection: true,
   playground: {
     tabs: [
       {
