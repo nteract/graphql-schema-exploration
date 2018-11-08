@@ -106,6 +106,7 @@ const server = new ApolloServer({
   playground: {
     tabs: [
       {
+        endpoint: "",
         query: `
 # Hit command-enter or ctrl-enter a few times
 
