@@ -1,10 +1,10 @@
-const { ApolloServer, gql } = require("apollo-server");
+import { ApolloServer } from "apollo-server";
 
-const { typeDefs } = require("./schema");
+import { typeDefs } from "./schema";
 
 const resolvers = {
   Cell: {
-    __resolveType: root => {
+    __resolveType: (root: any) => {
       switch (root.cellType) {
         case "CODE":
           return "CodeCell";
@@ -16,7 +16,7 @@ const resolvers = {
     }
   },
   Output: {
-    __resolveType: root => {
+    __resolveType: (root: any) => {
       switch (root.outputType) {
         case "STREAM":
           return "StreamOutput";

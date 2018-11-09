@@ -4,8 +4,10 @@
   "description": "Exploring a GraphQL schema for notebooks",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "start:live": "nodemon node index.js"
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "start": "node lib/index.js",
+    "dev": "tsc-watch --onSuccess \"npm run start\""
   },
   "repository": {
     "type": "git",
@@ -24,6 +26,8 @@
     "graphql-type-json": "^0.2.1"
   },
   "devDependencies": {
-    "nodemon": "^1.18.6"
+    "@types/graphql": "^14.0.3",
+    "tsc-watch": "^1.0.30",
+    "typescript": "^3.1.6"
   }
 }
