@@ -1,6 +1,6 @@
-const { gql } = require("apollo-server");
+import { gql } from "apollo-server";
 
-const typeDef = gql`
+export const typeDef = gql`
   scalar JSON
 
   type Notebook {
@@ -59,7 +59,3 @@ const typeDef = gql`
   union Output = StreamOutput | DisplayData
 
 `;
-
-module.exports = {
-  Notebook: typeDef
-};

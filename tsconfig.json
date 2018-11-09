@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "outDir": "lib",
+    "strict": true,
+    "module": "commonjs",
+    "declaration": true,
+    "esModuleInterop": true,
+    "lib": ["esnext", "dom"],
+    "jsx": "react",
+    "typeRoots": ["./node_modules/@types", "types"]
+  },
+  "include": ["src"]
+}
